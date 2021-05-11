@@ -9,6 +9,7 @@ main(Argv):-
   read_file(In, L),
   treat_lines(L,Out).
 
+% ------------------- Tratamento de Entrada e Saída ---------------- %
 treat_entry([X|[]], I, O):-
   I = X, O = [].
 
@@ -17,6 +18,7 @@ treat_entry([X,Y], I, O):-
   open(O, write,Out),
   write(Out, ""),
   close(Out).
+% ------------------- Tratamento de Entrada e Saída ---------------- %
 
 init_list([]). % Inicializar lista vazia
 

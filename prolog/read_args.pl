@@ -6,16 +6,15 @@ main(Argv):-
   prompt(_,''),
   % check_member(Argv, '--help').
   % write(Argv).
-  all_args(Argv).
-check_member([_|[]],_).
-check_member([H|_],E):-
-  E = H,
-  write(E).
-check_member([_|T], E):-
-  check_member(T,E).
+  check_help(Argv).
 
-all_args([]).
-all_args(['--help'|_]):-
+check_help(X):-
+  (
+    memberchk('--help', X) -> helpcmd([]);
+    treat_args(X)
+  ).
+
+helpcmd(_):-
   write("Usage: uniq [OPTION]... [INPUT [OUTPUT]]
 Filter adjacent matching lines from INPUT (or standard input),
 writing to OUTPUT (or standard output).
@@ -52,9 +51,11 @@ Full documentation at: <https://www.gnu.org/software/coreutils/uniq>
 or available locally via: info '(coreutils) uniq invocation'
 ").
 
-all_args([C|T]):-
-  write(C),
-  nl,
-  all_args(T).
+treat_args([]).
+treat_args([X|_]):-
+  (X = '-c'
+  ;X = '--count'),
+  count_funct(_).
 
-all_args([]).
+count_funct(_):-
+  write('contei hehe\n').
