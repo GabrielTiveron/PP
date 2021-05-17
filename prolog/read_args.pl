@@ -6,6 +6,7 @@ main(Argv):-
   prompt(_,''),
   % check_member(Argv, '--help').
   % write(Argv).
+
   check_help(Argv).
 
 check_help(X):-
@@ -13,6 +14,16 @@ check_help(X):-
     memberchk('--help', X) -> helpcmd([]);
     treat_args(X)
   ).
+
+versioncmd(_):-
+  write("uniq (GNU coreutils) 8.30
+Copyright (C) 2018 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Richard M. Stallman and David MacKenzie.
+"),halt(0).
 
 helpcmd(_):-
   write("Usage: uniq [OPTION]... [INPUT [OUTPUT]]
@@ -49,7 +60,7 @@ Also, comparisons honor the rules specified by 'LC_COLLATE'.
 GNU coreutils online help: <https://www.gnu.org/software/coreutils/>
 Full documentation at: <https://www.gnu.org/software/coreutils/uniq>
 or available locally via: info '(coreutils) uniq invocation'
-").
+"),halt(0).
 
 treat_args([]).
 treat_args([X|_]):-

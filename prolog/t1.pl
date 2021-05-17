@@ -1,28 +1,48 @@
 #!/usr/bin/env swipl
 
+:-include('parse_args.pl').
+:-include('c_flag.pl').
+:-include('cd_flag.pl').
+:-include('d_flag.pl').
+:-include('D_flag.pl').
+
 :-initialization(main, main).
 
 main(Argv):-
   prompt(_,''),
-  treat_entry(Argv, In, Out),
+  % write("Antes parse"),nl,
+  check_args(Argv,C,D,R,U,Fin,Fout),
+  % write("Dps parse"),nl,
+  validade_flags(C,D,R,U),
+  % write("Dps Validade"),nl,
+  validate_io(Fin,Fout),
+  % write("Dps validate"),nl,
+  write("C = "),write(C),nl,
+  write("D = "),write(D),nl,
+  write("R = "),write(R),nl,
+  write("U = "),write(U),nl,
+  write("Fin = "),write(Fin),nl,
+  write("Fout = "),write(Fout),nl,
+  write("==============================="),nl,
+  treat_entry(Fout),
+  % write("Antes Ler"),nl,
   %% write(In),nl,write(Out),nl,
-  read_file(In, L),
-  treat_lines(L,Out).
+  read_file(Fin, L),
+  ((C == 1, D == 0, R == 1) -> count_distinct(L,Fout,1);
+   (C == 1, D == 0, R == 0) -> count_ap(L,Fout,1);
+   (C == 0, D == 1, R == 0) -> show_equals(L,Fout,1);
+   (C == 0, D == 0, R == 1) -> show_once(L,Fout,1);
+   (C == 0, D == 0, R == 0) -> treat_lines(L,Fout)).
 
 % ------------------- Tratamento de Entrada e Saída ---------------- %
-treat_entry([X|[]], I, O):-
-  I = X, O = [].
+treat_entry([]).
+treat_entry(O):-
+   open(O, write, Out),
+   write(Out,""),close(Out).
 
-treat_entry([X,Y], I, O):-
-  I = X, O = Y,
-  open(O, write,Out),
-  write(Out, ""),
-  close(Out).
-% ------------------- Tratamento de Entrada e Saída ---------------- %
+% ------------------- Fim Tratamento de Entrada e Saída ---------------- %
 
-init_list([]). % Inicializar lista vazia
-
-% --------------- Tratamento de linhas do arquivo --------------- %
+% --------------- Comportamento padrão --------------- %
 treat_lines([],_).
 
 treat_lines([X|[]],[]):-
@@ -51,7 +71,7 @@ treat_lines([_,Y|T],N):-
   append([Y], T, New),
   treat_lines(New,N).
 
-% --------------- Fim Tratamento de linhas de Entrada --------------- %
+% --------------- Fim Comportamento padrão ------------------- %
 % --------------- Leitura de linhas de Entrada --------------- %
 
 read_file(N, L):-             % Leitura de arquivo se fornecido
