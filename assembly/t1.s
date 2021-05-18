@@ -20,28 +20,26 @@ section .text
 global _start
 _start:
 
-    pop ebx       ; argc
-    pop ebx       ; argv[0] (executable name)
-    pop ebx       ; argv[1] (desired file name)
+    pop ebx
+    pop ebx
+    pop ebx
 
-    mov eax, 0x05 ; syscall number for open
-    xor ecx, ecx  ; O_RDONLY = 0
-    xor edx, edx  ; Mode is ignored when O_CREAT isn't specified
-    int 0x80      ; Call the kernel
-    test eax, eax ; Check the output of open()
-    jns file_read ; If the sign flag is set (positive) we can begin reading the file
+    mov eax, 5
+    xor ecx, ecx
+    xor edx, edx
+    int 80h
+    test eax, eax
+    jns file_read
 
 file_read:
 
-    mov ebx, eax        ; Move our file descriptor into ebx
-    mov eax, 0x03       ; syscall for read = 3
-    mov ecx, buffer     ; Our 2kb byte buffer
-    mov edx, buflen     ; The size of our buffer
-    int 0x80
-    test eax, eax       ; Check for errors / EOF
+    mov ebx, eax
+    mov eax, 0x03
+    mov ecx, buffer
+    mov edx, buflen
+    int 80h
+    test eax, eax
 
-    ; mov al, [buffer]
-    ; mov [current], al
     cmp [eax], byte 0
     jnz quit
 

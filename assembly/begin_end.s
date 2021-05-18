@@ -16,51 +16,38 @@ section .data
 section .text
 global _start
 _start:
-    ; open(char *path, int flags, mode_t mode);
 
-    ; Get our command line arguments.
-    pop ebx ; argc
-    pop ebx ; argv[0] (executable name)
-    pop ebx ; argv[1] (desired file name)
+    pop ebx ; Leitura dos agumentos
+    pop ebx
+    pop ebx
 
-    ; mov crnt_len, 0
-    ; mov last_len, 0
-
-    mov eax, 0x05 ; syscall number for open
-    xor ecx, ecx ; O_RDONLY = 0
-    xor edx, edx ; Mode is ignored when O_CREAT isn't specified
-    int 0x80 ; Call the kernel
-    test eax, eax ; Check the output of open()
-    jns file_read ; If the sign flag is set (positive) we can begin reading the file
-
-  ; = If the output is negative, then open failed. So we should exit
-exit:
-    mov eax, 0x01 ; 0x01 = syscall for exit
-    xor ebx, ebx ; makes ebx technically set to zero
+    mov eax, 0x05 ; syscall para abrir o arquivo de entrada
+    xor ecx, ecx
+    xor edx, edx
     int 0x80
+    test eax, eax
+    jns file_read
 
-  ; = Begin reading the file
+exit:
+    mov eax, 1
+    xor ebx, ebx
+    int 80h
 
 file_read:
-    ; read(int fd, void *buf, size_t count);
-    mov ebx, eax    ; Move our file descriptor into ebx
-    mov eax, 0x03   ; syscall for read = 3
-    mov ecx, buffer ; Our 2kb byte buffer
-    mov edx, buflen ; The size of our buffer
-    int 0x80
-    test eax, eax   ; Check for errors / EOF
 
-    ; mov index_c, 0
-    ; mov index_l, 0
+    mov ebx, eax    ; Leitura do arquivo de entrada
+    mov eax, 3
+    mov ecx, buffer
+    mov edx, buflen
+    int 80h
+    test eax, eax
+
     mov eax, [buffer]
 
-    ;mov byte[current], [buffer]
-    ; cmp [eax], byte 0
-    jmp iterate_file ; If EOF, then write our buffer out.
-    ; call quit         ; If read failed, we exit.
+    jmp iterate_file
 
 iterate_file:
-    ; get oline by line
+    ; Leitura de arquivo linha por linha
     push eax
     mov eax, D1
     call sprintLF
@@ -70,7 +57,6 @@ iterate_file:
 
     mov ecx, eax
     jmp fill_current
-    ; inc eax
 
     mov edx, 0
 
@@ -112,12 +98,3 @@ fill_current:
 
     jne fill_current
     ret
-
-file_out:
-    ; write(int fd, void *buf, size_t count);
-    mov edx, eax ; read returns amount of bytes read
-    mov eax, 0x04 ; syscall write = 4
-    mov ebx, 0x01 ; STDOUT = 1
-    mov ecx, buffer ; Move our buffer into the arguments
-    int 0x80
-    call quit

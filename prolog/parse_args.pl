@@ -1,28 +1,4 @@
-% #!/usr/bin/env swipl
-% :-include('functions.pl').
-% % %
-% :-initialization(main, main).
-%
-% main(Argv):-
-%   prompt(_,''),
-%   % C is 0, D is 0, R is 0,
-%   % init_list(Fin),init_list(Fout),
-%   % write("Antes parse"),nl,
-%   check_args(Argv,C,D,R, U,G,Ar,Fin,Fout),
-%   % write("Dps parse"),nl,
-%   validate_io(Fin, Fout),
-%   validade_flags(C,D,R,U,G,Ar),
-%   write("C = "),write(C),nl,
-%   write("D = "),write(D),nl,
-%   write("R = "),write(R),nl,
-%   write("U = "),write(U),nl,
-%   write("G = "),write(G),nl,
-%   write("Ar = "),write(Ar),nl,
-%   write("Fin = "),write(Fin),nl,
-%   write("Fout = "),write(Fout),nl.
-
-% is_empty()
-
+:-include('functions.pl').
 
 validade_flags(C,D,R,U,G,Ar):-
   (var(C) -> C is 0;C is 1),
@@ -113,6 +89,16 @@ check_args(['-D'| T], C, D, R, U,G,Ar,Fin,Fout):-
 
 check_args(['-cd'| T], C, D, R, U,G,Ar,Fin,Fout):-
   R is 1,
+  C is 1,
+  check_args(T, C, D, R, U,G,Ar,Fin,Fout).
+
+check_args(['-cD'| T], C, D, R, U,G,Ar,Fin,Fout):-
+  D is 1,
+  C is 1,
+  check_args(T, C, D, R, U,G,Ar,Fin,Fout).
+
+check_args(['-Dc'| T], C, D, R, U,G,Ar,Fin,Fout):-
+  D is 1,
   C is 1,
   check_args(T, C, D, R, U,G,Ar,Fin,Fout).
 

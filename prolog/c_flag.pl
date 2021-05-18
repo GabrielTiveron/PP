@@ -35,6 +35,6 @@ count_ap([X,Y|T], N, Count):-
   append([Y],T,New),
   count_ap(New,N,1).
 
-count_ap([_,Y|T],N,_):-
-  append([Y], T, New),
-  count_ap(New,N, 0).
+% count_ap([_,Y|T],N,_):-
+%   append([Y], T, New),
+%   count_ap(New,N, 0).
