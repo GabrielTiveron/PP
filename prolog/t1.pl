@@ -5,15 +5,17 @@
 :-include('cd_flag.pl').
 :-include('d_flag.pl').
 :-include('D_flag.pl').
+:-include('u_flag.pl').
+:-include('group_flag.pl').
 
 :-initialization(main, main).
 
 main(Argv):-
   prompt(_,''),
   % write("Antes parse"),nl,
-  check_args(Argv,C,D,R,U,Fin,Fout),
+  check_args(Argv,C,D,R,U,G,Ar,Fin,Fout),
   % write("Dps parse"),nl,
-  validade_flags(C,D,R,U),
+  validade_flags(C,D,R,U,G,Ar),
   % write("Dps Validade"),nl,
   validate_io(Fin,Fout),
   % write("Dps validate"),nl,
@@ -21,18 +23,30 @@ main(Argv):-
   write("D = "),write(D),nl,
   write("R = "),write(R),nl,
   write("U = "),write(U),nl,
+  write("G = "),write(G), nl,
+  write("Ar = "),write(Ar), nl,
   write("Fin = "),write(Fin),nl,
   write("Fout = "),write(Fout),nl,
   write("==============================="),nl,
   treat_entry(Fout),
   % write("Antes Ler"),nl,
   %% write(In),nl,write(Out),nl,
+  % init_list(Uni);
   read_file(Fin, L),
-  ((C == 1, D == 0, R == 1) -> count_distinct(L,Fout,1);
-   (C == 1, D == 0, R == 0) -> count_ap(L,Fout,1);
-   (C == 0, D == 1, R == 0) -> show_equals(L,Fout,1);
-   (C == 0, D == 0, R == 1) -> show_once(L,Fout,1);
-   (C == 0, D == 0, R == 0) -> treat_lines(L,Fout)).
+  ((C == 1, D == 0, R == 1, U == 0) -> count_distinct(L,Fout,1);
+    (G > 0, (C == 1; D == 1; R == 1; U == 1; Ar > 0)) -> exclusive();
+    (C == 1, (D == 1; Ar > 0)) -> meaningless();
+    (R == 1, U == 1) -> halt(0);
+    (C == 1, D == 0, R == 0, U == 0) -> count_ap(L,Fout,1);
+    (C == 0, D == 1, R == 0) -> (Ar == 3 -> pre_file(Fout);true),
+                                            show_equals(L,Fout,1,Ar);
+    (C == 0, D == 0, R == 1) -> show_once(L,Fout,1);
+    (C == 0, D == 0, R == 0, U == 1) -> show_unique(L,Fout,1);
+    (C == 1, D == 0, R == 0, U == 1) -> count_unique(L,Fout,1);
+    (C == 0, D == 0, R == 0, U == 0, G > 0) ->
+                                            ( G >= 3 -> pre_file(Fout);true),
+                                            group_lines(L,Fout,G);
+    (C == 0, D == 0, R == 0, U == 0, G == 0) -> treat_lines(L,Fout)).
 
 % ------------------- Tratamento de Entrada e Saída ---------------- %
 treat_entry([]).

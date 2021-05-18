@@ -3,11 +3,11 @@ slen:
   mov ebx, eax
 
 nextchar:
-  cmp     byte [eax], 0
+  cmp     byte [eax], 0Ah
   jz      finished
   inc     eax
   jmp     nextchar
- 
+
 finished:
   sub     eax, ebx
   pop     ebx
@@ -19,7 +19,7 @@ sprint:
   push ebx
   push eax
   call slen
-  
+
   mov edx, eax
   pop eax
 
@@ -49,4 +49,3 @@ quit:
   mov ebx, 0
   mov eax, 1
   int 80h
-  ret
